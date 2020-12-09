@@ -16,7 +16,19 @@
 package com.streamsets.pipeline.stage.destination.solr;
 
 
-import com.esotericsoftware.minlog.Log;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Joiner;
 import com.streamsets.pipeline.api.Batch;
 import com.streamsets.pipeline.api.ErrorCode;
@@ -33,17 +45,6 @@ import com.streamsets.pipeline.solr.api.TargetFactorySettings;
 import com.streamsets.pipeline.stage.common.DefaultErrorRecordHandler;
 import com.streamsets.pipeline.stage.common.ErrorRecordHandler;
 import com.streamsets.pipeline.stage.processor.scripting.ProcessingMode;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class SolrTarget extends BaseTarget {
   private final static Logger LOG = LoggerFactory.getLogger(SolrTarget.class);
@@ -115,6 +116,13 @@ public class SolrTarget extends BaseTarget {
       issues.add(createSolrConfigIssue("conf.socketTimeout", Errors.SOLR_15));
     }
   }
+  
+  
+  protected void validateSecurityOptions(List<ConfigIssue> issues) {
+      if (conf.basicAuth && conf.kerberosAuth) {
+          issues.add(createSolrConfigIssue("conf.basicAuth", Errors.SOLR_16));
+      }
+  }
 
   protected boolean validateConfigs(List<ConfigIssue> issues) {
     validateRecordSolrFieldsPath(issues);
@@ -122,6 +130,7 @@ public class SolrTarget extends BaseTarget {
     validateFieldsNamesMap(issues);
     validateConnectionTimeout(issues);
     validateSocketConnection(issues);
+    validateSecurityOptions(issues);
     return solrInstanceInfo;
   }
 
@@ -139,13 +148,18 @@ public class SolrTarget extends BaseTarget {
           conf.zookeeperConnect,
           conf.defaultCollection,
           conf.kerberosAuth,
+          conf.basicAuth,
+          
           conf.skipValidation,
           conf.waitFlush,
           conf.waitSearcher,
           conf.softCommit,
           conf.ignoreOptionalFields,
           conf.connectionTimeout,
-          conf.socketTimeout
+          conf.socketTimeout,
+          conf.username,
+          conf.password
+          
       );
       sdcSolrTarget = SdcSolrTargetFactory.create(settings).create();
       try {
@@ -330,7 +344,7 @@ public class SolrTarget extends BaseTarget {
       try {
         this.sdcSolrTarget.destroy();
       } catch (Exception e) {
-        Log.error(e.toString());
+        LOG.error(e.toString());
       }
     }
     super.destroy();

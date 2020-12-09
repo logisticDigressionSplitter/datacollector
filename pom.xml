@@ -238,6 +238,7 @@
     <module>sdc-solr_cdh_4</module>
     <module>sdc-solr_6</module>
     <module>sdc-solr_7</module>
+    <module>sdc-solr_8</module>
     <module>spark-executor-protolib</module>
     <module>spark-processor-protolib</module>
     <module>scripting-protolib</module>
@@ -538,6 +539,7 @@
         <apache-kudu_1_7-lib>apache-kudu_1_7-lib</apache-kudu_1_7-lib>
         <apache-pulsar_2-lib>apache-pulsar_2-lib</apache-pulsar_2-lib>
         <apache-solr_6_1_0-lib>apache-solr_6_1_0-lib</apache-solr_6_1_0-lib>
+        <apache-solr_8_5_0-lib>apache-solr_8_5_0-lib</apache-solr_8_5_0-lib>
         <cassandra_3-lib>cassandra_3-lib</cassandra_3-lib>
         <cdh_5_2-lib>cdh_5_2-lib</cdh_5_2-lib>
         <cdh_5_3-lib>cdh_5_3-lib</cdh_5_3-lib>
@@ -634,6 +636,7 @@
         <module>apache-kudu_1_7-lib</module>
         <module>apache-pulsar_2-lib</module>
         <module>apache-solr_6_1_0-lib</module>
+        <module>apache-solr_8_5_0-lib</module>
         <module>cassandra_3-lib</module>
         <module>cdh_5_2-lib</module>
         <module>cdh_5_3-lib</module>
@@ -722,6 +725,7 @@
         <apache-kudu_1_7-lib>apache-kudu_1_7-lib</apache-kudu_1_7-lib>
         <apache-pulsar_2-lib>apache-pulsar_2-lib</apache-pulsar_2-lib>
         <apache-solr_6_1_0-lib>apache-solr_6_1_0-lib</apache-solr_6_1_0-lib>
+        <apache-solr_8_5_0-lib>apache-solr_8_5_0-lib</apache-solr_8_5_0-lib>
         <cassandra_3-lib>cassandra_3-lib</cassandra_3-lib>
         <cdh-spark_2_3-lib>cdh-spark_2_3-lib</cdh-spark_2_3-lib>
         <cdh_5_16-lib>cdh_5_16-lib</cdh_5_16-lib>
@@ -758,6 +762,7 @@
         <module>apache-kudu_1_7-lib</module>
         <module>apache-pulsar_2-lib</module>
         <module>apache-solr_6_1_0-lib</module>
+        <module>apache-solr_8_5_0-lib</module>
         <module>cassandra_3-lib</module>
         <module>cdh-spark_2_1-lib</module>
         <module>cdh_5_16-lib</module>

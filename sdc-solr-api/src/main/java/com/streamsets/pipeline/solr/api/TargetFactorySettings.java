@@ -15,12 +15,15 @@
  */
 package com.streamsets.pipeline.solr.api;
 
+import com.streamsets.pipeline.api.credential.CredentialValue;
+
 public class TargetFactorySettings {
   private String instanceType;
   private String solrURI;
   private String zookeeperConnect;
   private String defaultCollection;
   private boolean kerberosAuth;
+  private boolean basicAuth;
   private boolean skipValidation;
   private final boolean waitFlush;
   private final boolean waitSearcher;
@@ -28,6 +31,8 @@ public class TargetFactorySettings {
   private boolean ignoreOptionalFields;
   private final int connectionTimeout;
   private final int socketTimeout;
+  private final CredentialValue user;
+  private final CredentialValue password;
 
   public TargetFactorySettings (
       String instanceType,
@@ -35,19 +40,23 @@ public class TargetFactorySettings {
       String zookeeperConnect,
       String defaultCollection,
       boolean kerberosAuth,
+      boolean basicAuth,
       boolean skipValidation,
       boolean waitFlush,
       boolean waitSearcher,
       boolean softCommit,
       boolean ignoreOptionalFields,
       int connectionTimeout,
-      int socketTimeout
+      int socketTimeout,
+      CredentialValue user,
+      CredentialValue password
   ) {
     this.instanceType = instanceType;
     this.solrURI = solrURI;
     this.zookeeperConnect = zookeeperConnect;
     this.defaultCollection = defaultCollection;
     this.kerberosAuth = kerberosAuth;
+    this.basicAuth = basicAuth;
     this.skipValidation = skipValidation;
     this.waitFlush = waitFlush;
     this.waitSearcher = waitSearcher;
@@ -55,6 +64,8 @@ public class TargetFactorySettings {
     this.ignoreOptionalFields = ignoreOptionalFields;
     this.connectionTimeout = connectionTimeout;
     this.socketTimeout = socketTimeout;
+    this.user = user;
+    this.password = password;
   }
 
   public String getInstanceType() {
@@ -77,7 +88,11 @@ public class TargetFactorySettings {
     return kerberosAuth;
   }
 
-  public boolean getSkipValidation() {
+  public boolean getBasicAuth() {
+    return basicAuth;
+}
+
+public boolean getSkipValidation() {
     return skipValidation;
   }
 
@@ -104,5 +119,13 @@ public class TargetFactorySettings {
   public int getSocketTimeout() {
     return socketTimeout;
   }
+
+public CredentialValue getUser() {
+    return user;
+}
+
+public CredentialValue getPassword() {
+    return password;
+}
 
 }

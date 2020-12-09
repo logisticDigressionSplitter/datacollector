@@ -23,6 +23,7 @@ import com.streamsets.pipeline.api.ListBeanModel;
 import com.streamsets.pipeline.api.ValueChooserModel;
 import com.streamsets.pipeline.stage.processor.scripting.ProcessingMode;
 import com.streamsets.pipeline.stage.processor.scripting.ProcessingModeChooserValues;
+import com.streamsets.pipeline.api.credential.CredentialValue;
 
 import java.util.List;
 
@@ -187,7 +188,45 @@ public class SolrConfigBean {
       group = "SOLR"
   )
   public boolean kerberosAuth;
+  
+  
+  @ConfigDef(
+       required = true,
+       type = ConfigDef.Type.BOOLEAN,
+       defaultValue = "false",
+       label = "Basic Authentication",
+       displayPosition = 80,
+       displayMode = ConfigDef.DisplayMode.ADVANCED,
+       group = "SOLR"
+     )
+   public boolean basicAuth;
 
+  
+   @ConfigDef(
+       displayMode = ConfigDef.DisplayMode.BASIC,
+       required = true,
+       type = ConfigDef.Type.CREDENTIAL,
+       dependsOn = "basicAuth",
+       triggeredByValue = "true",
+       label = "Username",
+       displayPosition = 20,
+       group = "CREDENTIALS"
+   )
+   public CredentialValue username;
+
+   @ConfigDef(
+       displayMode = ConfigDef.DisplayMode.BASIC,
+       required = true,
+       type = ConfigDef.Type.CREDENTIAL,
+       dependsOn = "basicAuth",
+       triggeredByValue = "true",
+       label = "Password",
+       displayPosition = 25,
+       group = "CREDENTIALS"
+   )
+   public CredentialValue password;
+  
+  
   @ConfigDef(
       required = true,
       type = ConfigDef.Type.BOOLEAN,

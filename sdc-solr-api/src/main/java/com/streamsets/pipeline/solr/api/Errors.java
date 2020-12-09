@@ -35,7 +35,8 @@ public enum Errors implements ErrorCode {
   SOLR_12("Mapping is missing Solr required fields: {}"),
   SOLR_13("Mapping is missing Solr optional fields: {}"),
   SOLR_14("Connection timeout cannot be negative"),
-  SOLR_15("Socket timeout cannot be negative")
+  SOLR_15("Socket timeout cannot be negative"),
+  SOLR_16("Can only Select BasicAuth or Kerberos")
   ;
   private final String msg;
 

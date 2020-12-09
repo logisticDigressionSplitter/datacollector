@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 StreamSets Inc.
+ * Copyright 2018 StreamSets Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.streamsets.pipeline.stage.destination.solr;
 
-import com.streamsets.pipeline.api.GenerateResourceBundle;
-import com.streamsets.pipeline.api.Label;
+package com.streamsets.pipeline.solr.impl;
 
-@GenerateResourceBundle
-public enum Groups implements Label {
-  SOLR("Solr"),
-  CREDENTIALS("Credentials"),
-  ;
+import com.streamsets.pipeline.solr.api.FactoriesBean;
+import com.streamsets.pipeline.solr.api.SdcSolrTargetFactory;
 
-  private final String label;
-  Groups(String label) {
-    this.label = label;
-  }
-
+public class Solr08FactoriesBean extends FactoriesBean {
   @Override
-  public String getLabel() {
-    return label;
+  public SdcSolrTargetFactory createSdcSolrTargetFactory() {
+    return new Solr08TargetFactory();
   }
 }
