@@ -35,6 +35,7 @@
 
   <properties>
     <solr.version>8.5.0</solr.version>
+    <commons.codec>1.15</commons.codec>
     <solr.test.jetty.version>8.1.10.v20130312</solr.test.jetty.version>
   </properties>
 
@@ -86,6 +87,13 @@
       <version>${solr.version}</version>
       <scope>provided</scope>
     </dependency>
+	<dependency>
+	    <groupId>commons-codec</groupId>
+	    <artifactId>commons-codec</artifactId>
+	    <version>${commons.codec}</version>
+	    <scope>compile</scope>
+	</dependency>
+    
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-test-framework</artifactId>

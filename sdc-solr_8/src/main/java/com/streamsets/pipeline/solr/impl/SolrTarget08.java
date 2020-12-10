@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpClientUtil;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.PreemptiveAuth;
 import org.apache.solr.client.solrj.request.schema.SchemaRequest;
 import org.apache.solr.client.solrj.response.schema.SchemaRepresentation;
 import org.apache.solr.client.solrj.response.schema.SchemaResponse;
@@ -173,6 +175,8 @@ public class SolrTarget08 implements SdcSolrTarget {
   }
   
   private void addBasicAuthSecurityProperties() {
+       PreemptiveAuth requestInterceptor = new PreemptiveAuth(new BasicScheme());
+       HttpClientUtil.addRequestInterceptor(requestInterceptor);
       HttpClientUtil.setHttpClientBuilder(SdcSolrBaicAuthHttpClientBuilder.create(this.user.get(), this.password.get()));
     }
 
