@@ -117,12 +117,6 @@ public class SolrTarget extends BaseTarget {
     }
   }
   
-  
-  protected void validateSecurityOptions(List<ConfigIssue> issues) {
-      if (conf.basicAuth && conf.kerberosAuth) {
-          issues.add(createSolrConfigIssue("conf.basicAuth", Errors.SOLR_16));
-      }
-  }
 
   protected boolean validateConfigs(List<ConfigIssue> issues) {
     validateRecordSolrFieldsPath(issues);
@@ -130,7 +124,6 @@ public class SolrTarget extends BaseTarget {
     validateFieldsNamesMap(issues);
     validateConnectionTimeout(issues);
     validateSocketConnection(issues);
-    validateSecurityOptions(issues);
     return solrInstanceInfo;
   }
 
@@ -142,14 +135,19 @@ public class SolrTarget extends BaseTarget {
     boolean solrInstanceInfo = validateConfigs(issues);
 
     if (solrInstanceInfo) {
+      // Get the auth type.
+      // Can't use the enum directly in TargetFactorySettings and remove the booleans to avoid breaking
+      // backwards compatibility with sdc-solr_6 & sdc-solr_7
+      final boolean kerberosAuth = conf.authType.equals(AuthTypeOptions.KERBEROS);
+      final boolean basicAuth = conf.authType.equals(AuthTypeOptions.BASIC_AUTH);
+
       TargetFactorySettings settings = new TargetFactorySettings(
           conf.instanceType.toString(),
           conf.solrURI,
           conf.zookeeperConnect,
           conf.defaultCollection,
-          conf.kerberosAuth,
-          conf.basicAuth,
-          
+          kerberosAuth,
+          basicAuth,
           conf.skipValidation,
           conf.waitFlush,
           conf.waitSearcher,
@@ -159,7 +157,7 @@ public class SolrTarget extends BaseTarget {
           conf.socketTimeout,
           conf.username,
           conf.password
-          
+
       );
       sdcSolrTarget = SdcSolrTargetFactory.create(settings).create();
       try {

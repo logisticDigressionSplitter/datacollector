@@ -84,6 +84,48 @@ public class SolrConfigBean {
   )
   public String defaultCollection;
 
+
+  @ConfigDef(
+      required = true,
+      type = ConfigDef.Type.MODEL,
+      defaultValue = "NONE",
+      label = "Authentication type",
+      description = "Authentication type used to connect to Solr",
+      displayPosition = 35,
+      displayMode = ConfigDef.DisplayMode.BASIC,
+      group = "SOLR"
+  )
+  @ValueChooserModel(AuthTypeOptionsChooserValues.class)
+  public AuthTypeOptions authType;
+
+
+  @ConfigDef(
+      displayMode = ConfigDef.DisplayMode.BASIC,
+      required = true,
+      type = ConfigDef.Type.CREDENTIAL,
+      label = "Username",
+      displayPosition = 20,
+      group = "CREDENTIALS",
+      dependencies = {
+          @Dependency(configName = "authType", triggeredByValues = "BASIC_AUTH")
+      }
+  )
+  public CredentialValue username;
+
+  @ConfigDef(
+      displayMode = ConfigDef.DisplayMode.BASIC,
+      required = true,
+      type = ConfigDef.Type.CREDENTIAL,
+      label = "Password",
+      displayPosition = 25,
+      group = "CREDENTIALS",
+      dependencies = {
+          @Dependency(configName = "authType", triggeredByValues = "BASIC_AUTH")
+      }
+  )
+  public CredentialValue password;
+
+
   @ConfigDef(
       required = true,
       type = ConfigDef.Type.MODEL,
@@ -178,55 +220,7 @@ public class SolrConfigBean {
   @ValueChooserModel(MissingFieldActionChooserValues.class)
   public MissingFieldAction missingFieldAction = MissingFieldAction.TO_ERROR;
 
-  @ConfigDef(
-      required = true,
-      type = ConfigDef.Type.BOOLEAN,
-      defaultValue = "false",
-      label = "Kerberos Authentication",
-      displayPosition = 70,
-      displayMode = ConfigDef.DisplayMode.ADVANCED,
-      group = "SOLR"
-  )
-  public boolean kerberosAuth;
-  
-  
-  @ConfigDef(
-       required = true,
-       type = ConfigDef.Type.BOOLEAN,
-       defaultValue = "false",
-       label = "Basic Authentication",
-       displayPosition = 80,
-       displayMode = ConfigDef.DisplayMode.ADVANCED,
-       group = "SOLR"
-     )
-   public boolean basicAuth;
 
-  
-   @ConfigDef(
-       displayMode = ConfigDef.DisplayMode.BASIC,
-       required = true,
-       type = ConfigDef.Type.CREDENTIAL,
-       dependsOn = "basicAuth",
-       triggeredByValue = "true",
-       label = "Username",
-       displayPosition = 20,
-       group = "CREDENTIALS"
-   )
-   public CredentialValue username;
-
-   @ConfigDef(
-       displayMode = ConfigDef.DisplayMode.BASIC,
-       required = true,
-       type = ConfigDef.Type.CREDENTIAL,
-       dependsOn = "basicAuth",
-       triggeredByValue = "true",
-       label = "Password",
-       displayPosition = 25,
-       group = "CREDENTIALS"
-   )
-   public CredentialValue password;
-  
-  
   @ConfigDef(
       required = true,
       type = ConfigDef.Type.BOOLEAN,

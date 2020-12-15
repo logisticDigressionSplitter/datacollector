@@ -80,7 +80,7 @@ public class SolrTarget08 implements SdcSolrTarget {
       boolean ignoreOptionalFields,
       int connectionTimeout,
       int socketTimeout,
-      CredentialValue user, 
+      CredentialValue user,
       CredentialValue password
   ) {
     this.instanceType = instanceType;
@@ -146,15 +146,21 @@ public class SolrTarget08 implements SdcSolrTarget {
       }
     }
   }
-  
+
 
 
   private SolrClient getSolrClient() {
+
+    // Re-check that only one of them is set
+    if(kerberosAuth && basicAuth){
+      throw new StageException(Errors.SOLR_16);
+    }
+
     if (kerberosAuth) {
       // set kerberos before create SolrClient
       addSecurityProperties();
     }
-    
+
     if (basicAuth) {
         addBasicAuthSecurityProperties();
     }
@@ -165,7 +171,7 @@ public class SolrTarget08 implements SdcSolrTarget {
     } else {
       CloudSolrClient cloudSolrClient = new CloudSolrClient.Builder().withZkHost(this.zookeeperConnect).build();
       cloudSolrClient.setDefaultCollection(this.defaultCollection);
-      
+
       return cloudSolrClient;
     }
   }
@@ -173,7 +179,7 @@ public class SolrTarget08 implements SdcSolrTarget {
   private void addSecurityProperties() {
     HttpClientUtil.setHttpClientBuilder(SdcSolrHttpClientBuilder.create());
   }
-  
+
   private void addBasicAuthSecurityProperties() {
        PreemptiveAuth requestInterceptor = new PreemptiveAuth(new BasicScheme());
        HttpClientUtil.addRequestInterceptor(requestInterceptor);
@@ -185,6 +191,8 @@ public class SolrTarget08 implements SdcSolrTarget {
     if (this.solrClient != null) {
       this.solrClient.close();
     }
+    HttpClientUtil.clearRequestInterceptors();
+    HttpClientUtil.resetHttpClientBuilder();
   }
 
   @Override
