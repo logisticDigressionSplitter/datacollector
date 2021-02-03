@@ -20,11 +20,10 @@ import com.streamsets.pipeline.api.ConfigDefBean;
 import com.streamsets.pipeline.api.ConnectionDef;
 import com.streamsets.pipeline.api.Dependency;
 import com.streamsets.pipeline.api.ValueChooserModel;
-import com.streamsets.pipeline.api.credential.CredentialValue;
 import com.streamsets.pipeline.lib.jdbc.connection.JdbcConnection;
-import com.streamsets.pipeline.lib.jdbc.multithread.DatabaseVendor;
+import com.streamsets.pipeline.lib.jdbc.connection.common.AbstractJdbcConnection;
 
-public class JdbcHikariPoolConfigBean extends HikariPoolConfigBean {
+public class JdbcHikariPoolConfigBean extends AbstractJdbcHikariPoolConfigBean {
 
   @ConfigDef(
       required = true,
@@ -49,29 +48,7 @@ public class JdbcHikariPoolConfigBean extends HikariPoolConfigBean {
   )
   public JdbcConnection connection;
 
-
-  @Override
-  public String getConnectionString() {
-    return connection.connectionString;
-  }
-
-  @Override
-  public DatabaseVendor getVendor() {
-    return DatabaseVendor.forUrl(connection.connectionString);
-  }
-
-  @Override
-  public CredentialValue getUsername() {
-    return connection.username;
-  }
-
-  @Override
-  public CredentialValue getPassword() {
-    return connection.password;
-  }
-
-  @Override
-  public boolean useCredentials() {
-    return connection.useCredentials;
+  protected AbstractJdbcConnection getConnection() {
+    return connection;
   }
 }

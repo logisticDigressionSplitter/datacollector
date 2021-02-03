@@ -16,5 +16,38 @@
 
 upgraderVersion: 1
 
-# No upgrade rules defined
-upgrades: []
+upgrades:
+  - toVersion: 3
+    actions:
+      - setConfig:
+          name: connection.connectionString
+          value: jdbc:mysql://${value("config.hostname")}
+      - setConfig:
+          lookForName: config.port
+          ifValueMatches: .+
+          name: connection.connectionString
+          value: jdbc:mysql://${value("config.hostname")}:${value("config.port")}
+      - removeConfigs:
+          namePattern: config.hostname
+      - removeConfigs:
+          namePattern: config.port
+      - setConfig:
+          lookForName: config.useSsl
+          ifValueMatches: true
+          name: connection.connectionString
+          value: ${value("connection.connectionString")}?useSsl=true
+      - removeConfigs:
+          namePattern: config.useSsl
+      - renameConfig:
+          oldNamePattern: config.username
+          newNamePattern: connection.username
+      - renameConfig:
+          oldNamePattern: config.password
+          newNamePattern: connection.password
+      - setConfig:
+          lookForName: connection.username
+          ifValueMatches: .+
+          name: connection.useCredentials
+          value: true
+          elseName: connection.useCredentials
+          elseValue: false

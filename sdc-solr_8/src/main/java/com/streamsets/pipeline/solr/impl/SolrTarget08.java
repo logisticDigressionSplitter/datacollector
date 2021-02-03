@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 StreamSets Inc.
+ * Copyright 2020 StreamSets Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.streamsets.pipeline.solr.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.impl.auth.BasicScheme;
+
+import com.streamsets.pipeline.api.credential.CredentialValue;
+import com.streamsets.pipeline.api.StageException;
+import com.streamsets.pipeline.solr.api.Errors;
+import com.streamsets.pipeline.solr.api.SdcSolrTarget;
+import com.streamsets.pipeline.solr.api.SolrInstanceAPIType;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
@@ -33,14 +34,13 @@ import org.apache.solr.client.solrj.response.schema.SchemaRepresentation;
 import org.apache.solr.client.solrj.response.schema.SchemaResponse;
 import org.apache.solr.common.SolrInputDocument;
 
-import com.streamsets.pipeline.api.StageException;
-import com.streamsets.pipeline.api.credential.CredentialValue;
-import com.streamsets.pipeline.solr.api.Errors;
-import com.streamsets.pipeline.solr.api.SdcSolrTarget;
-import com.streamsets.pipeline.solr.api.SolrInstanceAPIType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This class is extremely similar to SolrTarget06, but as we want to avoid dependencies between different version of
+ * This class is extremely similar to SolrTarget07, but as we want to avoid dependencies between different version of
  * the implementation, we choose to duplicate some code, but keep them independent.
  */
 
@@ -171,7 +171,6 @@ public class SolrTarget08 implements SdcSolrTarget {
     } else {
       CloudSolrClient cloudSolrClient = new CloudSolrClient.Builder().withZkHost(this.zookeeperConnect).build();
       cloudSolrClient.setDefaultCollection(this.defaultCollection);
-
       return cloudSolrClient;
     }
   }

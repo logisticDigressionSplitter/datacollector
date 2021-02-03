@@ -16,14 +16,13 @@
 
 package com.streamsets.pipeline.lib.jdbc.connection;
 
-import com.streamsets.pipeline.api.ConfigDef;
 import com.streamsets.pipeline.api.ConfigGroups;
 import com.streamsets.pipeline.api.ConnectionDef;
 import com.streamsets.pipeline.api.ConnectionEngine;
-import com.streamsets.pipeline.api.ConnectionVerifier;
 import com.streamsets.pipeline.api.InterfaceAudience;
 import com.streamsets.pipeline.api.InterfaceStability;
-import com.streamsets.pipeline.api.credential.CredentialValue;
+import com.streamsets.pipeline.lib.jdbc.connection.common.AbstractJdbcConnection;
+import com.streamsets.pipeline.lib.jdbc.connection.common.JdbcConnectionGroups;
 
 @InterfaceAudience.LimitedPrivate
 @InterfaceStability.Unstable
@@ -36,52 +35,8 @@ import com.streamsets.pipeline.api.credential.CredentialValue;
     supportedEngines = { ConnectionEngine.COLLECTOR, ConnectionEngine.TRANSFORMER }
 )
 @ConfigGroups(JdbcConnectionGroups.class)
-public class JdbcConnection {
+public class JdbcConnection extends AbstractJdbcConnection {
 
   public static final String TYPE = "STREAMSETS_JDBC";
 
-  @ConfigDef(
-      displayMode = ConfigDef.DisplayMode.BASIC,
-      required = true,
-      type = ConfigDef.Type.STRING,
-      label = "JDBC Connection String",
-      displayPosition = 10,
-      group = "#0"
-  )
-  public String connectionString = "";
-
-  @ConfigDef(
-      displayMode = ConfigDef.DisplayMode.ADVANCED,
-      required = true,
-      type = ConfigDef.Type.BOOLEAN,
-      defaultValue = "true",
-      label = "Use Credentials",
-      displayPosition = 15,
-      group = "#0"
-  )
-  public boolean useCredentials = true;
-
-  @ConfigDef(
-      displayMode = ConfigDef.DisplayMode.BASIC,
-      required = true,
-      type = ConfigDef.Type.CREDENTIAL,
-      dependsOn = "useCredentials",
-      triggeredByValue = "true",
-      label = "Username",
-      displayPosition = 20,
-      group = "#1"
-  )
-  public CredentialValue username;
-
-  @ConfigDef(
-      displayMode = ConfigDef.DisplayMode.BASIC,
-      required = true,
-      type = ConfigDef.Type.CREDENTIAL,
-      dependsOn = "useCredentials",
-      triggeredByValue = "true",
-      label = "Password",
-      displayPosition = 25,
-      group = "#1"
-  )
-  public CredentialValue password;
 }

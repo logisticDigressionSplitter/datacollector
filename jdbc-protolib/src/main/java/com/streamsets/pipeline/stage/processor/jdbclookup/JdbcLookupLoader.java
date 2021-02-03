@@ -27,6 +27,7 @@ import com.streamsets.pipeline.lib.jdbc.JdbcErrors;
 import com.streamsets.pipeline.lib.jdbc.JdbcUtil;
 import com.streamsets.pipeline.lib.jdbc.UnknownTypeAction;
 import com.streamsets.pipeline.lib.jdbc.UtilsProvider;
+import com.streamsets.pipeline.lib.jdbc.multithread.DatabaseVendor;
 import com.streamsets.pipeline.stage.common.ErrorRecordHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,8 @@ public class JdbcLookupLoader extends CacheLoader<String, Optional<List<Map<Stri
   private final Meter selectMeter;
   private final Timer selectTimer;
   private final JdbcUtil jdbcUtil;
+  private final DatabaseVendor vendor;
+  private final UnknownTypeAction unknownTypeAction;
 
   public JdbcLookupLoader(
     Stage.Context context,
@@ -61,7 +64,9 @@ public class JdbcLookupLoader extends CacheLoader<String, Optional<List<Map<Stri
     Map<String, DataType> columnsToTypes,
     int maxClobSize,
     int maxBlobSize,
-    ErrorRecordHandler errorRecordHandler
+    ErrorRecordHandler errorRecordHandler,
+    DatabaseVendor vendor,
+    UnknownTypeAction unknownTypeAction
   ) {
     this.dataSource = dataSource;
     this.columnsToTypes = columnsToTypes;
@@ -71,6 +76,8 @@ public class JdbcLookupLoader extends CacheLoader<String, Optional<List<Map<Stri
     this.selectMeter = context.createMeter("Select Queries");
     this.selectTimer = context.createTimer("Select Queries");
     this.jdbcUtil = UtilsProvider.getJdbcUtil();
+    this.vendor = vendor;
+    this.unknownTypeAction = unknownTypeAction;
   }
 
   @Override
@@ -101,7 +108,8 @@ public class JdbcLookupLoader extends CacheLoader<String, Optional<List<Map<Stri
           maxBlobSize,
           columnsToTypes,
           errorRecordHandler,
-          UnknownTypeAction.STOP_PIPELINE
+          unknownTypeAction,
+          vendor
         );
 
         int numColumns = md.getColumnCount();

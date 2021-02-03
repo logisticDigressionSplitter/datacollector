@@ -86,7 +86,7 @@ public final class MSQueryUtil {
 
   private static final String SELECT_CT_CLAUSE = "SELECT * FROM CHANGETABLE(CHANGES %s, %s) AS CT %s %s";
   private static final String SELECT_CLAUSE = "SELECT * " +
-      "FROM cdc.fn_cdc_get_all_changes_%s (@start_lsn, @to_lsn, N'all update old') ";
+      "FROM cdc.[fn_cdc_get_all_changes_%s] (@start_lsn, @to_lsn, N'all update old') ";
   private static final String SELECT_TABLE_CLAUSE = "SELECT * FROM cdc.%s_CT ";
 
   private static final Joiner COMMA_SPACE_JOINER = Joiner.on(", ");
@@ -130,11 +130,11 @@ public final class MSQueryUtil {
 
     for (String primaryKey: offsetColumns) {
       if (!primaryKey.equals(SYS_CHANGE_VERSION)) {
-        equalCondition.add(String.format(COLUMN_EQUALS_VALUE, CT_TABLE_NAME + "." + primaryKey, TABLE_NAME + "." + primaryKey));
-        orderCondition.add(CT_TABLE_NAME + "." + primaryKey);
+        equalCondition.add(String.format(COLUMN_EQUALS_VALUE, CT_TABLE_NAME + ".[" + primaryKey + "]", TABLE_NAME + ".[" + primaryKey + "]"));
+        orderCondition.add(CT_TABLE_NAME + ".[" + primaryKey + "]");
 
         if (!Strings.isNullOrEmpty(offsetMap.get(primaryKey))) {
-          greaterCondition.add(String.format(COLUMN_GREATER_THAN_VALUE, CT_TABLE_NAME + "." + primaryKey, offsetMap.get(primaryKey)));
+          greaterCondition.add(String.format(COLUMN_GREATER_THAN_VALUE, CT_TABLE_NAME + ".[" + primaryKey + "]", offsetMap.get(primaryKey)));
           isInitial = false;
         }
       }

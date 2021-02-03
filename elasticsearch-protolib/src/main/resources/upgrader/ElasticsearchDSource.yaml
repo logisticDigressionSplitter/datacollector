@@ -28,3 +28,31 @@ upgrades:
       - setConfig:
           name: conf.securityConfig.securityPassword
           value: ""
+  - toVersion: 3
+    actions:
+      - setConfig:
+          lookForName: conf.httpUris
+          elseName: conf.httpUris
+          elseValue: []
+      - setConfigFromJoinedConfigList:
+          listName: conf.httpUris
+          name: conf.connection.serverUrl
+          delimiter: ","
+      - removeConfigs:
+          namePattern: conf.httpUris
+      - renameConfig:
+          oldNamePattern: conf.useSecurity
+          newNamePattern: conf.connection.useSecurity
+      - setConfig:
+          name: conf.connection.port
+          value: "9200"
+      - renameConfig:
+          oldNamePattern: conf.securityConfig.(.*$)
+          newNamePattern: conf.connection.securityConfig.(0)
+      - setConfig:
+          lookForName: conf.connection.securityConfig.sslTrustStorePath
+          ifValueMatches: ".+"
+          name: conf.connection.securityConfig.enableSSL
+          value: true
+          elseName: conf.connection.securityConfig.enableSSL
+          elseValue: false

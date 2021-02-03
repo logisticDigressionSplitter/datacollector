@@ -18,6 +18,7 @@ package com.streamsets.pipeline.lib.kafka;
 import com.streamsets.pipeline.api.Stage;
 import com.streamsets.pipeline.lib.kafka.connection.KafkaSecurityConfig;
 import com.streamsets.pipeline.lib.kafka.connection.KafkaSecurityOptions;
+import com.streamsets.pipeline.lib.kafka.connection.SaslMechanisms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ public class KafkaSecurityUtil {
   private static final String SECURITY_PROTOCOL = "security.protocol";
 
   private static final String KRB_SERVICE_NAME = "sasl.kerberos.service.name";
+  private static final String SASL_MECHANISM = "sasl.mechanism";
 
   private static final String TRUSTSTORE_LOCATION = "ssl.truststore.location";
   private static final String TRUSTSTORE_PASSWORD = "ssl.truststore.password";
@@ -66,7 +68,10 @@ public class KafkaSecurityUtil {
 
       // Kerberos Options
       if (securityConfig.securityOption.isOneOf(KafkaSecurityOptions.SASL_PLAINTEXT, KafkaSecurityOptions.SASL_SSL)) {
-        configMap.put(KRB_SERVICE_NAME, securityConfig.kerberosServiceName);
+        configMap.put(SASL_MECHANISM, securityConfig.saslMechanism.getMechanism());
+        if (securityConfig.saslMechanism.isOneOf(SaslMechanisms.GSSAPI)) {
+          configMap.put(KRB_SERVICE_NAME, securityConfig.kerberosServiceName);
+        }
       }
     }
   }
@@ -94,6 +99,7 @@ public class KafkaSecurityUtil {
       // Kerberos Options
       if (securityConfig.securityOption.isOneOf(KafkaSecurityOptions.SASL_PLAINTEXT, KafkaSecurityOptions.SASL_SSL)) {
         forbiddenProperties.add(KRB_SERVICE_NAME);
+        forbiddenProperties.add(SASL_MECHANISM);
       }
 
       if (!Collections.disjoint(additionalProperties.keySet(), forbiddenProperties)) {

@@ -417,7 +417,9 @@ public class JdbcUtil {
         quoteChar.getQuoteCharacter()
     );
     for (String offsetColumn : offsetColumnNames) {
-      final String qualifiedOffsetColumn = TableContextUtil.getQuotedObjectName(offsetColumn, quoteChar.getQuoteCharacter());
+      String quoteCharLeft = quoteChar.getQuoteCharacter();
+      String quoteCharRight = quoteChar.getQuoteCharacter().equals("[") ? "]" : quoteChar.getQuoteCharacter();
+      final String qualifiedOffsetColumn = TableContextUtil.getQuotedObjectName(offsetColumn, quoteCharLeft, quoteCharRight);
       final String minMaxOffsetQuery = String.format(minMaxQuery, qualifiedOffsetColumn, qualifiedTableName);
       LOG.debug("Issuing {} offset query: {}",
             minMaxQuery.equals(MIN_OFFSET_VALUE_QUERY) ? "MINIMUM" : "MAXIMUM", minMaxOffsetQuery);
@@ -831,7 +833,8 @@ public class JdbcUtil {
       int maxBlobSize,
       Map<String, DataType> columnsToTypes,
       ErrorRecordHandler errorRecordHandler,
-      UnknownTypeAction unknownTypeAction
+      UnknownTypeAction unknownTypeAction,
+      DatabaseVendor vendor
   ) throws SQLException, StageException {
     return resultSetToFields(
         rs,
@@ -842,7 +845,7 @@ public class JdbcUtil {
         unknownTypeAction,
         null,
         false,
-        DatabaseVendor.UNKNOWN
+        vendor
     );
   }
 

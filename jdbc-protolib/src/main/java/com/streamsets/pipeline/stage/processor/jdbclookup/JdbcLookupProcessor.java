@@ -37,6 +37,7 @@ import com.streamsets.pipeline.lib.jdbc.HikariPoolConfigBean;
 import com.streamsets.pipeline.lib.jdbc.JdbcErrors;
 import com.streamsets.pipeline.lib.jdbc.JdbcFieldColumnMapping;
 import com.streamsets.pipeline.lib.jdbc.JdbcUtil;
+import com.streamsets.pipeline.lib.jdbc.UnknownTypeAction;
 import com.streamsets.pipeline.lib.jdbc.UtilsProvider;
 import com.streamsets.pipeline.stage.common.DefaultErrorRecordHandler;
 import com.streamsets.pipeline.stage.common.ErrorRecordHandler;
@@ -47,6 +48,11 @@ import com.streamsets.pipeline.stage.processor.kv.CacheConfig;
 import com.streamsets.pipeline.stage.processor.kv.LookupUtils;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
@@ -95,6 +101,7 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
   private Optional<List<Map<String, Field>>> defaultValue;
   private CacheCleaner cacheCleaner;
   private final MissingValuesBehavior missingValuesBehavior;
+  private final UnknownTypeAction unknownTypeAction;
 
   private ExecutorService generationExecutor;
   private int preprocessThreads = 0;
@@ -105,6 +112,7 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
       List<JdbcFieldColumnMapping> columnMappings,
       MultipleValuesBehavior multipleValuesBehavior,
       MissingValuesBehavior missingValuesBehavior,
+      UnknownTypeAction unknownTypeAction,
       int maxClobSize,
       int maxBlobSize,
       HikariPoolConfigBean hikariConfigBean,
@@ -114,6 +122,7 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
     this.columnMappings = columnMappings;
     this.multipleValuesBehavior = multipleValuesBehavior;
     this.missingValuesBehavior = missingValuesBehavior;
+    this.unknownTypeAction = unknownTypeAction;
     this.maxClobSize = maxClobSize;
     this.maxBlobSize = maxBlobSize;
     this.hikariConfigBean = hikariConfigBean;
@@ -153,6 +162,30 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
 
     if(issues.isEmpty()) {
       this.defaultValue = calculateDefault(context, issues);
+    }
+
+    if(issues.isEmpty()) {
+      try (Connection validationConnection = dataSource.getConnection();
+           Statement statement = validationConnection.createStatement()) {
+        String preparedQuery = prepareQuery(query);
+        statement.setFetchSize(1);
+        statement.setMaxRows(1);
+        List<String> columnNamesFromDb = getColumnsFromValidationQuery(issues, context, statement, preparedQuery);
+        if (issues.isEmpty()) {
+          for (String columnName : columnsToFields.keySet()) {
+            if (!columnNamesFromDb.contains(columnName)) {
+              issues.add(context.createConfigIssue(Groups.JDBC.name(), COLUMN_MAPPINGS, JdbcErrors.JDBC_95, columnName));
+            }
+          }
+        }
+      } catch (SQLException e) {
+        issues.add(context.createConfigIssue(
+            Groups.JDBC.name(),
+            CONNECTION_STRING,
+            JdbcErrors.JDBC_00,
+            jdbcUtil.formatSqlException(e)
+        ));
+      }
     }
 
     if (issues.isEmpty()) {
@@ -397,6 +430,35 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
     }
   }
 
+  private String prepareQuery(String query) {
+    String preparedQuery = query.replaceAll("(\\$\\{)(.*?)(\\})", "0");
+    return preparedQuery;
+  }
+
+  private List<String> getColumnsFromValidationQuery(
+      List<ConfigIssue> issues, Processor.Context context, Statement statement, String preparedQuery
+  ) {
+    List<String> columnNamesFromDb = new ArrayList<>();
+      try {
+        ResultSet rs = statement.executeQuery(preparedQuery);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        for (int i = 1; i <= rsmd.getColumnCount(); i++){
+          columnNamesFromDb.add(rsmd.getColumnLabel(i));
+        }
+      } catch (SQLException e) {
+        String formattedError = jdbcUtil.formatSqlException(e);
+        LOG.error(formattedError);
+        LOG.debug(formattedError, e);
+        issues.add(context.createConfigIssue(Groups.JDBC.name(),
+            preparedQuery,
+            JdbcErrors.JDBC_34,
+            preparedQuery,
+            formattedError
+        ));
+      }
+    return columnNamesFromDb;
+  }
+
   private void setFieldsInRecord(Record record, Map<String, Field>fields) {
     for (Map.Entry<String, Field> entry : fields.entrySet()) {
       String columnName = entry.getKey();
@@ -435,7 +497,9 @@ public class JdbcLookupProcessor extends SingleLaneRecordProcessor {
       columnsToTypes,
       maxClobSize,
       maxBlobSize,
-      errorRecordHandler
+      errorRecordHandler,
+      hikariConfigBean.getVendor(),
+      unknownTypeAction
     );
     return LookupUtils.buildCache(loader, cacheConfig, defaultValue);
   }

@@ -37,13 +37,29 @@ public class KafkaSecurityConfig {
 
   @ConfigDef(
       required = true,
+      type = ConfigDef.Type.MODEL,
+      defaultValue = "GSSAPI",
+      label = "SASL Mechanism",
+      description = "SASL mechanism to use",
+      displayPosition = 15,
+      dependencies = {
+          @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"})
+      },
+      group = "#0"
+  )
+  @ValueChooserModel(SaslMechanismsChooserValues.class)
+  public SaslMechanisms saslMechanism;
+
+  @ConfigDef(
+      required = true,
       type = ConfigDef.Type.STRING,
       label = "Kerberos Service Name",
       description = "Kerberos service principal name that the Kafka brokers run as",
       defaultValue = "",
-      displayPosition = 15,
+      displayPosition = 20,
       dependencies = {
-          @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"})
+          @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"}),
+          @Dependency(configName = "saslMechanism", triggeredByValues = {"GSSAPI"})
       },
       group = "#0"
   )
@@ -55,10 +71,11 @@ public class KafkaSecurityConfig {
       defaultValue = "false",
       label = "Provide Keytab at Runtime",
       description = "Use a unique Kerberos keytab and principal for this stage to securely connect to Kafka through Kerberos. Overrides the default Kerberos keytab and principal configured for the Data Collector installation.",
-      displayPosition = 20,
+      displayPosition = 25,
       displayMode = ConfigDef.DisplayMode.ADVANCED,
       dependencies = {
-          @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"})
+          @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"}),
+          @Dependency(configName = "saslMechanism", triggeredByValues = {"GSSAPI"})
       },
       group = "#0"
   )
@@ -70,7 +87,7 @@ public class KafkaSecurityConfig {
       defaultValue = "",
       label = "Runtime Keytab",
       description = "Base64 encoded keytab to use for this stage. Paste the contents of the base64 encoded keytab, or use a credential function to retrieve the base64 keytab from a credential store.",
-      displayPosition = 25,
+      displayPosition = 30,
       displayMode = ConfigDef.DisplayMode.ADVANCED,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"}),
@@ -87,7 +104,7 @@ public class KafkaSecurityConfig {
       defaultValue = "user/host@REALM",
       label = "Runtime Principal",
       description = "Kerberos service principal to use for this stage.",
-      displayPosition = 30,
+      displayPosition = 35,
       displayMode = ConfigDef.DisplayMode.ADVANCED,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SASL_PLAINTEXT", "SASL_SSL"}),
@@ -103,7 +120,7 @@ public class KafkaSecurityConfig {
       label = "Truststore Type",
       description = "Type of the truststore",
       defaultValue = "JKS",
-      displayPosition = 35,
+      displayPosition = 40,
       displayMode = ConfigDef.DisplayMode.BASIC,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL", "SSL_AUTH", "SASL_SSL"})
@@ -134,7 +151,7 @@ public class KafkaSecurityConfig {
       label = "Truststore Password",
       description = "Password for the truststore file",
       defaultValue = "",
-      displayPosition = 45,
+      displayPosition = 50,
       displayMode = ConfigDef.DisplayMode.BASIC,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL", "SSL_AUTH", "SASL_SSL"})
@@ -149,7 +166,7 @@ public class KafkaSecurityConfig {
       label = "Keystore Type",
       description = "Type of the keystore",
       defaultValue = "JKS",
-      displayPosition = 50,
+      displayPosition = 55,
       displayMode = ConfigDef.DisplayMode.BASIC,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL_AUTH"})
@@ -165,7 +182,7 @@ public class KafkaSecurityConfig {
       label = "Keystore File",
       description = "",
       defaultValue = "",
-      displayPosition = 55,
+      displayPosition = 60,
       displayMode = ConfigDef.DisplayMode.BASIC,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL_AUTH"})
@@ -180,7 +197,7 @@ public class KafkaSecurityConfig {
       label = "Keystore Password",
       description = "Password for the keystore file",
       defaultValue = "",
-      displayPosition = 60,
+      displayPosition = 65,
       displayMode = ConfigDef.DisplayMode.BASIC,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL_AUTH"})
@@ -195,7 +212,7 @@ public class KafkaSecurityConfig {
       label = "Key Password",
       description = "Password for the key in the keystore",
       defaultValue = "",
-      displayPosition = 65,
+      displayPosition = 70,
       displayMode = ConfigDef.DisplayMode.ADVANCED,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL_AUTH"})
@@ -210,7 +227,7 @@ public class KafkaSecurityConfig {
       label = "Enabled Protocols",
       description = "Comma separated list of protocols enabled for SSL connections",
       defaultValue = "TLSv1.2",
-      displayPosition = 70,
+      displayPosition = 75,
       displayMode = ConfigDef.DisplayMode.ADVANCED,
       dependencies = {
           @Dependency(configName = "securityOption", triggeredByValues = {"SSL", "SSL_AUTH", "SASL_SSL"})

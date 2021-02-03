@@ -120,6 +120,7 @@ public enum JdbcErrors implements ErrorCode {
     " '{}' and table name can't be read"),
   JDBC_94("SQL Query parsing not supported for 'SELECT FOR UPDATE' statements. " +
     "Please remove 'SELECT FOR UPDATE' or disable the 'Parse SQL Query' config."),
+  JDBC_95("Column Name '{}' from the Columns Mappings configuration not found in the database."),
 
   JDBC_100("Could not enable partitioning for table {}: {}"),
   JDBC_101("Invalid partition size for table {}: {}"),
@@ -157,10 +158,12 @@ public enum JdbcErrors implements ErrorCode {
   JDBC_411("Filter schema values cannot be empty."),
   JDBC_412("Poll interval (s) '{}' cannot be greater than Batch Time Wait (ms) '{}'"), //Postgres
   JDBC_413("Could not create the WAL receiver: {}"), //Postgres
+  JDBC_414("This database does not support the Quote Character: {}"),
 
   JDBC_500("The JDBC URL must be 'jdbc:<vendor>://<HOST>[:<PORT>][/<DB>]...'"),
   JDBC_501("Connection must be secured, either by SSL encryption or SSH Tunneling"),
   JDBC_502("Batch size greater than maximal batch size allowed in sdc.properties, maxBatchSize: {}"),
+  JDBC_503("Incorrect vendor in JDBC URL for connection type {}"),
 
   JDBC_600("Missing redo log files for time range ({}, {})"),
   JDBC_601("Could not find a valid LogMiner dictionary: {}"),

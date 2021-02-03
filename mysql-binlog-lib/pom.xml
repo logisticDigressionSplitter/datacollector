@@ -22,19 +22,19 @@
   <parent>
     <groupId>com.streamsets</groupId>
     <artifactId>streamsets-datacollector-stage-lib-parent</artifactId>
-    <version>3.21.0-SNAPSHOT</version>
+    <version>3.22.0-SNAPSHOT</version>
     <relativePath>../stage-lib-parent</relativePath>
   </parent>
   <groupId>com.streamsets</groupId>
   <artifactId>streamsets-datacollector-mysql-binlog-lib</artifactId>
-  <version>3.21.0-SNAPSHOT</version>
+  <version>3.22.0-SNAPSHOT</version>
   <description>StreamSets Data Collector MySql BinLog Lib</description>
   <name>StreamSets Data Collector MySql BinLog Lib</name>
 
   <properties>
     <jackson.version>2.8.8</jackson.version>
     <mysql-connector-java.version>5.1.39</mysql-connector-java.version>
-    <mysql-binlog-connector-java.version>0.23.3</mysql-binlog-connector-java.version>
+    <mysql-binlog-connector-java.version>0.23.4</mysql-binlog-connector-java.version>
     <joda.version>2.8</joda.version>
     <guava.version>19.0</guava.version>
   </properties>
@@ -89,6 +89,10 @@
       <artifactId>streamsets-datacollector-stagesupport</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.streamsets</groupId>
+      <artifactId>streamsets-datacollector-jdbc-connection</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
@@ -101,10 +105,21 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>mysql</artifactId>
         <version>${testcontainers.version}</version>
         <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.streamsets</groupId>
+      <artifactId>streamsets-datacollector-stagesupport</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
